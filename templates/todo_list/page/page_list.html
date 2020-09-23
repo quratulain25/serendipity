@@ -1,0 +1,65 @@
+{% extends 'jumbotron_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block display_data %}
+
+    <!-- Header -->
+    <h1 class="display-6"> Your Pages </h1>
+    <hr class="my-4">
+
+    <!-- Table -->
+    <table class="table table-borderless">
+        <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td> Title</td>
+            <td> Tasks</td>
+            <td> Actions</td>
+            <td>
+                <a href="{% url 'todo_list:create_page' %}" class="get-started-btn scrollto"> New Page </a>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for page in page_list %}
+            <tr>
+                <td> {{ page.title }} </td>
+                <td>
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            Select Task to Edit
+                        </button>
+                        <div class="dropdown-menu">
+                            {% for task in task_list %}
+                                {% if task.page_id == page.id %}
+                                    {% if task.is_complete %}
+                                        <a class="dropdown-item text-success"
+                                           href="{% url 'todo_list:edit_task' pk=task.id %}"> {{ task.title }} </a>
+                                    {% else %}
+                                        <a class="dropdown-item"
+                                           href="{% url 'todo_list:edit_task' pk=task.id %}"> {{ task.title }} </a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn text-secondary" href={% url "todo_list:create_task" page_id=page.id %}>
+                        <i class="far fa-address-card"></i>
+                    </a>
+                    <a class="btn text-secondary" href={% url "todo_list:edit_page" pk=page.id %}>
+                        <i class="far fa-edit"></i>
+                    </a>
+                    <form action="{% url 'todo_list:delete_page' pk=page.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">
+                            <i class="far fa-trash-alt text-danger float-right"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -12,6 +12,6 @@ urlpatterns = [path('', views.dashboard_view, name='dashboard'),
                path('list_page', views.list_page_view, name='list_page'),
 
                path('edit_task/<int:pk>', views.edit_task_view, name='edit_task'),
-               path('delete_task/<int:pk>', views.delete_page_view, name='delete_page'),
+               path('delete_task/<int:pk>', views.delete_task_view, name='delete_task'),
                path('<int:page_id>/create_task', views.create_task_view, name='create_task'),
                ] + static(settings.STATIC_URL)

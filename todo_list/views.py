@@ -8,6 +8,8 @@ def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 
+# Page Views #
+
 def list_page_view(request):
     page_list = Page.objects.all()
     task_list = Task.objects.all()
@@ -48,6 +50,8 @@ def delete_page_view(request, pk=0):
     return redirect('todo_list:list_page')
 
 
+# Task Views #
+
 def create_task_view(request, page_id=0):
     if request.method == 'GET':
         form = TaskForm()
@@ -68,10 +72,11 @@ def edit_task_view(request, pk=0):
 
     if request.method == 'GET':
         form = TaskForm(instance=task)
+        form.id = task.id
         return render(request, 'todo_list/task/task_create.html', {'form': form})
 
     else:
-        form = TaskForm(request.POST, instance=task) # This is problematic doesn't pick FK
+        form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
             return redirect('todo_list:list_page')
@@ -80,4 +85,4 @@ def edit_task_view(request, pk=0):
 def delete_task_view(request, pk=0):
     task = Task.objects.get(pk=pk)
     task.delete()
-    return redirect('todo_list:list_task')
+    return redirect('todo_list:list_page')
