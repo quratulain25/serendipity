@@ -1,15 +1,17 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from todo_list.forms import PageForm, TaskForm
 from todo_list.models import Page, Task
 
 
+@login_required
 def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 
 # Page Views #
-
+@login_required
 def list_page_view(request):
     page_list = Page.objects.all()
     task_list = Task.objects.all()
@@ -18,6 +20,7 @@ def list_page_view(request):
     return render(request, 'todo_list/page/page_list.html', context)
 
 
+@login_required
 def create_page_view(request):
     if request.method == 'GET':
         form = PageForm()
@@ -30,6 +33,7 @@ def create_page_view(request):
             return redirect('todo_list:list_page')
 
 
+@login_required
 def edit_page_view(request, pk=0):
     page = Page.objects.get(pk=pk)
 
@@ -44,6 +48,7 @@ def edit_page_view(request, pk=0):
             return redirect('todo_list:list_page')
 
 
+@login_required
 def delete_page_view(request, pk=0):
     page = Page.objects.get(pk=pk)
     page.delete()
@@ -51,7 +56,7 @@ def delete_page_view(request, pk=0):
 
 
 # Task Views #
-
+@login_required
 def create_task_view(request, page_id=0):
     if request.method == 'GET':
         form = TaskForm()
@@ -67,6 +72,7 @@ def create_task_view(request, page_id=0):
             return redirect('todo_list:list_page')
 
 
+@login_required
 def edit_task_view(request, pk=0):
     task = Task.objects.get(pk=pk)
 
@@ -82,6 +88,7 @@ def edit_task_view(request, pk=0):
             return redirect('todo_list:list_page')
 
 
+@login_required
 def delete_task_view(request, pk=0):
     task = Task.objects.get(pk=pk)
     task.delete()

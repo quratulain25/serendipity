@@ -1,0 +1,35 @@
+{% extends 'jumbotron_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block display_data %}
+
+    <!-- Header -->
+    <h1 class="display-6">Login</h1>
+    <p class="lead">First step towards an exciting journey.</p>
+    <hr class="my-4">
+
+    <!-- Form -->
+    <form action="" method="post" class="form-horizontal registerForm">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-sm-4">
+                {{ form.username|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                {{ form.password|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <button class="btn btn-primary" type="submit" role="button"> Login </button>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-secondary" href="{% url 'todo_list:dashboard' %}"> Cancel </a>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
