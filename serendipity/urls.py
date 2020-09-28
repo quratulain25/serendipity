@@ -4,6 +4,8 @@ from django.conf.urls.static import static
 
 from serendipity import settings
 
-urlpatterns = [path('admin/', admin.site.urls),
-               path('accounts/', include('django.contrib.auth.urls')),
-               path('', include('todo_list.urls'))] + static(settings.STATIC_URL)
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('todo_list.urls')),
+] + static(settings.STATIC_URL)
