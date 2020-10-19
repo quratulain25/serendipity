@@ -1,0 +1,42 @@
+{% extends 'jumbotron_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block display_data %}
+
+    <!-- Header -->
+    {% if 'create_page' in request.path %}
+        <h1 class="display-6">Create New Page</h1>
+        <p class="lead">Let's get started by creating a new page.</p>
+        <hr class="my-4">
+    {% elif 'edit_page' in request.path %}
+        <h1 class="display-6">Edit Page</h1>
+        <p class="lead"> Feel free to edit your page.</p>
+        <hr class="my-4">
+    {% endif %}
+
+    <!-- Form Error Handler -->
+    {% block form_error_handler %}
+        {% include 'form_error_handler.html' %}
+    {% endblock %}
+    <!-- Form Error Handler -->
+
+    <!-- Form -->
+    <form action="" method="post" class="form-horizontal registerForm">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-sm-4">
+                {{ form.title|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <button class="btn btn-primary" type="submit" role="button"> Submit</button>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-secondary" href="{% url 'todo_list:list_page' %}"> Cancel </a>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
