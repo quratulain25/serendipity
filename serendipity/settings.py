@@ -26,7 +26,7 @@ SECRET_KEY = '270%8r(h*k_j&5m-q+%9v0#yt2^(0c1y4bvswwzhdqot+hp#h('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['qurat.pythonanywhere.com', '127.0.0.1']
 
 
 # Application definition
