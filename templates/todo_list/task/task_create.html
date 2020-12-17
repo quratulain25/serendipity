@@ -1,5 +1,4 @@
 {% extends 'jumbotron_base.html' %}
-{% load crispy_forms_tags %}
 
 {% block display_data %}
 
@@ -22,43 +21,100 @@
     <!-- Form -->
     <form action="" method="post" class="form-horizontal registerForm">
         {% csrf_token %}
-
         <div class="row">
             <div class="col-sm-8 d-none">
-                {{ form.page|as_crispy_field }}
+                <input type="text" class="form-control" id="page" value={{ page }}>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-8">
-                {{ form.title|as_crispy_field }}
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-8">
-                {{ form.description|as_crispy_field }}
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea class="form-control rounded-0" id="description" name="description" rows="10" required></textarea>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-4">
-                {{ form.is_complete|as_crispy_field }}
+                <div class="form-group checkbox">
+                    <label for="is_complete">Is Complete:</label>
+                    <input type="checkbox" id="is_complete" name="is_complete" value="false">
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-2">
-                <button class="btn btn-primary" type="submit" role="button"> Submit</button>
+                <button class="btn btn-primary" type="submit" role="button" onclick="create_or_update();"> Submit
+                </button>
             </div>
             <div class="col-sm-2">
                 <a class="btn btn-secondary" href="{% url 'todo_list:list_page' %}"> Cancel </a>
             </div>
             {% if 'edit_task' in request.path %}
                 <div class="col-auto">
-                    <button type="submit" class="btn">
-                        <a class="btn btn-danger" href="{% url 'todo_list:delete_task' pk=form.instance.id %}"> Delete Task </a>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                        Delete
                     </button>
                 </div>
             {% endif %}
         </div>
-
     </form>
+
+    <script>
+
+        const pathname = window.location.pathname;
+        var api = 'http://127.0.0.1:8004/api/tasks/'
+        var task_id = pathname.split('/')[2]
+
+        if (pathname.includes('edit')) {
+            populate_form();
+        }
+
+        function populate_form() {
+            fetch(api.concat(task_id, '/'))
+                .then((resp) => resp.json())
+                .then(function (data) {
+                        document.getElementById('page').value = data.page;
+                        document.getElementById('title').value = data.title;
+                        document.getElementById('description').value = data.description;
+                        document.getElementById('is_complete').value = data.is_complete;
+                });
+        }
+
+        function create_or_update() {
+            var method = 'POST'
+            if (pathname.includes('edit')) {
+                method = 'PUT'
+                api = api.concat(task_id, '/')
+            }
+
+            var body = {
+                'page': document.getElementById('page').value,
+                'title': document.getElementById('title').value,
+                'description': document.getElementById('description').value,
+                'is_complete': document.getElementById('is_complete').checked,
+            }
+            var header = {
+                'Content-Type': 'application/json',
+                'X-CSRFTOKEN': getCookie('csrftoken')
+            }
+
+            //request
+            fetch(api.concat(task_id, '/'), {
+                'method': method,
+                'headers': header,
+                'body': JSON.stringify(body)
+            })
+        }
+
+    </script>
 
 {% endblock %}

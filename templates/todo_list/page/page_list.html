@@ -21,47 +21,113 @@
             </td>
         </tr>
         </thead>
-        <tbody>
-        {% for page in page_list %}
-            <tr>
-                <td> {{ page.title }} </td>
-                <td>
-                    <div class="dropdown">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                            Select Task to Edit
-                        </button>
-                        <div class="dropdown-menu">
-                            {% for task in task_list %}
-                                {% if task.page_id == page.id %}
-                                    {% if task.is_complete %}
-                                        <a class="dropdown-item text-success"
-                                           href="{% url 'todo_list:edit_task' pk=task.id %}"> {{ task.title }} </a>
-                                    {% else %}
-                                        <a class="dropdown-item"
-                                           href="{% url 'todo_list:edit_task' pk=task.id %}"> {{ task.title }} </a>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <a class="btn text-secondary" href={% url "todo_list:create_task" page_id=page.id %}>
-                        <i class="far fa-address-card"></i>
-                    </a>
-                    <a class="btn text-secondary" href={% url "todo_list:edit_page" pk=page.id %}>
-                        <i class="far fa-edit"></i>
-                    </a>
-                    <form action="{% url 'todo_list:delete_page' pk=page.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn">
-                            <i class="far fa-trash-alt text-danger float-right"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
+        <tbody id="table_body"></tbody>
     </table>
+
+    <!-- JS -->
+    <script>
+
+        function createNode(element) {
+            return document.createElement(element);
+        }
+
+        function append(parent, el) {
+            return parent.appendChild(el);
+        }
+
+        buildList()
+
+        function buildList() {
+            var page_api = 'http://127.0.0.1:8004/api/pages/'
+            var tb_wrapper = document.getElementById('table_body')
+
+            fetch(page_api)
+                .then((resp) => resp.json())
+                .then(function (data) {
+
+                    let pages = data.results;
+                    for (page of pages) {
+
+                        // create row and cell
+                        let tr = createNode('tr'),
+                            cell_title = createNode('td'),
+                            cell_actions = createNode('td'),
+                            cell_dropdown = createNode('td');
+
+                        // fill information in columns
+                        cell_title.innerHTML = page.title;
+                        cell_actions.innerHTML = `<td>
+                                                    <a class="btn text-secondary" href="${page.id}/create_task">
+                                                        <i class="far fa-address-card"></i>
+                                                    </a>
+                                                    <a class="btn text-secondary" href="edit_page/${page.id}">
+                                                        <i class="far fa-edit"></i>
+                                                    </a>
+                                                    <form method="post" id="delete" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn" onclick="delete_page(${page.id});">
+                                                            <i class="far fa-trash-alt text-danger float-right"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>`
+
+                        // create and fill info in dropdown
+                        let dropdown = createNode('div');
+                        dropdown.className = "dropdown"
+                        dropdown.innerHTML = `<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                                                    Select Task to Edit
+                                              </button>`
+
+                        let dropdown_menu = createNode('div');
+                        dropdown_menu.className = "dropdown-menu";
+
+                        for (task of page.tasks) {
+                            let anchor_tag = createNode('a');
+                            if (task.is_complete === true){
+                                anchor_tag.className = "dropdown-item text-success";
+                            }
+                            else{
+                                anchor_tag.className = "dropdown-item text-danger";
+                            }
+
+                            anchor_tag.innerText = task.title;
+                            anchor_tag.href = 'edit_task/' + task.id;
+                            append(dropdown_menu, anchor_tag);
+                        }
+
+                        append(dropdown, dropdown_menu);
+                        append(cell_dropdown, dropdown)
+
+                        // add tags in row
+                        append(tr, cell_title);
+                        append(tr, cell_dropdown);
+                        append(tr, cell_actions);
+
+                        tb_wrapper.innerHTML += tr.innerHTML;
+                    }
+                })
+        }
+
+        function delete_page(page_id) {
+            var result = confirm("Want to delete?");
+            const csrftoken = getCookie('csrftoken');
+
+            if (result === true) {
+                var page_api = 'http://127.0.0.1:8004/api/pages/' + page_id + '/'
+                var header = {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTOKEN': csrftoken
+                }
+
+                fetch(page_api, {
+                    'method': 'DELETE',
+                    'headers': header,
+                })
+            } else {
+                return false
+            }
+        }
+
+    </script>
 
 {% endblock %}
